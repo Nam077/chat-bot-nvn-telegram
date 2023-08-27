@@ -3,4 +3,6 @@ from bot.utils.db import SessionLocal
 
 db = SessionLocal()
 key_sv = KeyService(db)
-print(key_sv.get_all_keys())
+keys = key_sv.get_all_keys()
+for key in keys:
+    print(key)

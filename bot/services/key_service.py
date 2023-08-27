@@ -22,6 +22,7 @@ class KeyService:
             raise ValueError("Key already exists.")
 
     def get_all_keys(self) -> list[Type[Key]]:
+        # relationship to font
         return self.db.query(Key).all()
 
     def get_key_by_id(self, key_id: int) -> Optional[Key]:
@@ -52,9 +53,13 @@ class KeyService:
         self.db.commit()
 
     def create_multiple_keys(self, key_values: List[str]) -> List[Key]:
-        new_keys = [Key(key=key_value) for key_value in key_values]
-        self.db.bulk_save_objects(new_keys)
+        self.delete_all_keys()
+        new_keys = [Key(name=key_value, value=key_value.lower()) for key_value in key_values]
+
+        # Bulk insert new keys into the database
+        self.db.bulk_save_objects(new_keys, return_defaults=True)
         self.db.commit()
+
         return new_keys
 
     def get_key_by_value(self, key_value: str) -> Optional[Key]:
