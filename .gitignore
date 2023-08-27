@@ -1,7 +1,8 @@
 /.idea
 .idea
 dist
-database
+database/
 .env
 keys/*.json
-/build
+build
+venv
