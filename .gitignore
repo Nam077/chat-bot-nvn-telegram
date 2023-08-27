@@ -1,8 +1,9 @@
 /.idea
 .idea
 dist
-keys/*.json
+keys/
 build
 venv
 build/main
 __pycache__/
+/database/fonts.db

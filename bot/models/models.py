@@ -6,7 +6,10 @@ from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum
 
+from bot.utils.db import engine, engine_2
+
 Base = declarative_base()
+Base_2 = declarative_base()
 
 
 class EnumTableName(Enum):
@@ -93,7 +96,7 @@ class Message(Base):
         return f'Message(id={self.id}, value={self.value})'
 
 
-class Settings(Base):
+class Setting(Base):
     __tablename__ = EnumTableName.SETTINGS.value
     id: Mapped[int] = mapped_column(primary_key=True)
     key: Mapped[str] = mapped_column(unique=True, nullable=False)
@@ -131,3 +134,22 @@ class Font(Base):
 
     def __str__(self):
         return f'Font(id={self.id}, name={self.name}, post_link={self.post_link}, slug={self.slug}, description={self.description}, status={self.status}, keys={self.keys}, links={self.links}, images={self.images}, messages={self.messages}, tags={self.tags})'
+
+
+class FontGlobal(Base_2):
+    __tablename__ = EnumTableName.FONTS.value
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    url: Mapped[str] = mapped_column(nullable=False)
+    thumbnail: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=True)
+    category_name: Mapped[str] = mapped_column(nullable=True)
+    download_link: Mapped[str] = mapped_column(nullable=True)
+    detail_images: Mapped[str] = mapped_column(nullable=True)
+    more_link: Mapped[str] = mapped_column(nullable=True)
+    file_name: Mapped[str] = mapped_column(nullable=True)
+    link_drive: Mapped[str] = mapped_column(nullable=True)
+    slug: Mapped[str] = mapped_column(unique=True, nullable=False)
+
+    def __str__(self):
+        return f'Font(id={self.id}, name={self.name}, url={self.url}, thumbnail={self.thumbnail}, description={self.description}, category_name={self.category_name}, download_link={self.download_link}, detail_images={self.detail_images}, more_link={self.more_link}, file_name={self.file_name}, link_drive={self.link_drive}, slug={self.slug})'

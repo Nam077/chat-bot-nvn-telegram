@@ -7,14 +7,17 @@ from telegram.ext import (
 )
 
 from bot.configs.logging import logger
+from bot.handlers.tiktok_handle import get_conv_handler_tiktok
+from bot.services.font_global_service import FontGlobalService
 from bot.services.font_service import FontService
 from bot.services.google_sheet import GoogleSheetsReader
 from bot.services.image_service import ImageService
 from bot.services.key_service import KeyService
 from bot.services.link_service import LinkService
 from bot.services.message_service import MessageService
+from bot.services.setting_service import SettingService
 from bot.services.tag_service import TagService
-from bot.utils.db import SessionLocal
+from bot.utils.db import SessionLocal, SessionLocal_2
 from handlers.font_handle import get_conv_handler_font
 from warnings import filterwarnings
 from telegram.warnings import PTBUserWarning
@@ -29,7 +32,8 @@ def create_services(db: Session):
     image_service = ImageService(db)
     message_service = MessageService(db)
     font_service = FontService(db)
-    return key_service, tag_service, link_service, image_service, message_service, font_service
+    setting_service = SettingService(db)
+    return key_service, tag_service, link_service, image_service, message_service, font_service, setting_service
 
 
 async def update_data(key_service: KeyService, tag_service: TagService, link_service: LinkService,
@@ -41,10 +45,16 @@ async def update_data(key_service: KeyService, tag_service: TagService, link_ser
 
 def main() -> None:
     db = SessionLocal()
-    key_service, tag_service, link_service, image_service, message_service, font_service = create_services(db)
-    application = Application.builder().token("6148725172:AAGcJYZkH7B5OudQwALgm4QhyEmyQuoT7G8").build()
-    application.add_handler(get_conv_handler_font())
-    application.run_polling(allowed_updates=[Update.ALL_TYPES])
+    db2 = SessionLocal_2()
+    # (key_service, tag_service, link_service, image_service, message_service, font_service,
+    #  setting_service) = create_services(db)
+    # TELEGRAM_BOT_TOKEN = setting_service.get_setting_by_key('TELEGRAM_BOT_TOKEN').value
+    # application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    # application.add_handler(get_conv_handler_font())
+    # application.add_handler(get_conv_handler_tiktok())
+    # application.run_polling(allowed_updates=[Update.ALL_TYPES])
+    fontGlobalService = FontGlobalService(db2)
+    print(fontGlobalService.get_random_font_by_name())
 
 
 if __name__ == "__main__":
