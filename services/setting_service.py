@@ -1,10 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
-from enum import Enum
-from typing import List, Optional, Type
+from typing import Optional, Type
 
-from bot.models.models import Setting
+from models.models import Setting
 
 
 class SettingService:

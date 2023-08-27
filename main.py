@@ -1,24 +1,22 @@
-from typing import List, Dict
-
 from sqlalchemy.orm import Session
 from telegram import Update
 from telegram.ext import (
     Application,
 )
 
-from bot.configs.logging import logger
-from bot.handlers.random_handle import RandomHandle
-from bot.handlers.tiktok_handle import get_conv_handler_tiktok
-from bot.services.font_global_service import FontGlobalService
-from bot.services.font_service import FontService
-from bot.services.google_sheet import GoogleSheetsReader
-from bot.services.image_service import ImageService
-from bot.services.key_service import KeyService
-from bot.services.link_service import LinkService
-from bot.services.message_service import MessageService
-from bot.services.setting_service import SettingService
-from bot.services.tag_service import TagService
-from bot.utils.db import SessionLocal, SessionLocal_2
+from configs.logging import logger
+from handlers.random_handle import RandomHandle
+from handlers.tiktok_handle import get_conv_handler_tiktok
+from services.font_global_service import FontGlobalService
+from services.font_service import FontService
+from services.google_sheet import GoogleSheetsReader
+from services.image_service import ImageService
+from services.key_service import KeyService
+from services.link_service import LinkService
+from services.message_service import MessageService
+from services.setting_service import SettingService
+from services.tag_service import TagService
+from utils.db import SessionLocal, SessionLocal_2
 from handlers.font_handle import get_conv_handler_font
 from warnings import filterwarnings
 from telegram.warnings import PTBUserWarning

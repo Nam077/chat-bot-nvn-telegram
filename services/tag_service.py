@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from sqlalchemy.orm.exc import NoResultFound
 
-from bot.models.models import Tag
+from models.models import Tag
 
 
 class TagService:

@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List, Optional
 from sqlalchemy.orm.exc import NoResultFound
 
-from bot.models.models import Message
+from models.models import Message
 
 
 class MessageService:

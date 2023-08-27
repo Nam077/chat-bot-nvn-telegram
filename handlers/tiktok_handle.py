@@ -1,11 +1,10 @@
 import requests
-import random
 import re
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove, InputMediaVideo
-from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters, \
-    ConversationHandler, CallbackQueryHandler
-from bot.configs.logging import logger
-from bot.configs.config import TELEGRAM_BOT_USERNAME
+from telegram import Update, ReplyKeyboardRemove, InputMediaVideo
+from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, \
+    ConversationHandler
+from configs.logging import logger
+from configs.config import TELEGRAM_BOT_USERNAME
 
 TIKTOK_LINK, TIKTOK_DOWNLOAD = range(2)
 

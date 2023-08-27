@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List, Optional, Type, Dict
 from sqlalchemy.orm.exc import NoResultFound
 
-from bot.models.models import Key, Link, Image, Font, Tag, Message
+from models.models import Key, Link, Image, Font, Tag, Message
 
 
 class FontService:

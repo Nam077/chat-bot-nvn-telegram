@@ -1,9 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from bot.configs.config import DATABASE_NAME, DATABASE_TYPE, DATABASE_NAME_2
+from configs.config import DATABASE_NAME, DATABASE_TYPE, DATABASE_NAME_2
 import os
 
-db_folder = os.path.join(os.path.dirname(__file__), '..', '..', 'database')
+db_folder = os.path.join(os.path.dirname(__file__), '../bot', '..', 'database')
 
 if not os.path.exists(db_folder):
     os.makedirs(db_folder)

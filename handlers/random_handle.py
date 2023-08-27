@@ -3,9 +3,9 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKe
 from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters, \
     ConversationHandler, CallbackQueryHandler
 import re
-from bot.configs.config import TELEGRAM_BOT_USERNAME
-from bot.configs.logging import logger
-from bot.services.font_global_service import FontGlobalService
+from configs.config import TELEGRAM_BOT_USERNAME
+from configs.logging import logger
+from services.font_global_service import FontGlobalService
 
 FONT_NAME, FONT_PHOTO, FONT_DOWNLOAD = range(3)
 

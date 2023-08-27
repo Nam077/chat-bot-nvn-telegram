@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
-from bot.models.user import User
-from sqlalchemy.exc import IntegrityError
+from models import User
 
 
 class UserService:

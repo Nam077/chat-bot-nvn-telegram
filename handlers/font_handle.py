@@ -1,8 +1,8 @@
 import random
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove
-from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters, \
+from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, \
     ConversationHandler, CallbackQueryHandler
-from bot.configs.logging import logger
+from configs.logging import logger
 
 FONT_NAME, FONT_PHOTO, FONT_DOWNLOAD = range(3)
 

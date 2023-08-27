@@ -7,13 +7,13 @@ import os
 import pandas as pd
 from jupyterlab_server import slugify
 import concurrent.futures
-from bot.configs.config import FANPAGE_FACEBOOK_URL, SPREADSHEET_ID
-from bot.services.font_service import FontService
-from bot.services.image_service import ImageService
-from bot.services.key_service import KeyService
-from bot.services.link_service import LinkService
-from bot.services.message_service import MessageService
-from bot.services.tag_service import TagService
+from configs.config import FANPAGE_FACEBOOK_URL, SPREADSHEET_ID
+from services.font_service import FontService
+from services.image_service import ImageService
+from services.key_service import KeyService
+from services.link_service import LinkService
+from services.message_service import MessageService
+from services.tag_service import TagService
 
 
 # %%
@@ -48,7 +48,7 @@ def flatten_2d_string_array(array):
 class GoogleSheetsReader:
     def __init__(self):
         scopes = ['https://www.googleapis.com/auth/spreadsheets']
-        key_file = os.path.join(os.path.dirname(__file__), '..', '..', 'keys', 'nvnfont.json')
+        key_file = os.path.join(os.path.dirname(__file__), '../bot', '..', 'keys', 'nvnfont.json')
         credentials = service_account.Credentials.from_service_account_file(key_file, scopes=scopes)
         self.service = build('sheets', 'v4', credentials=credentials)
         self.spreadsheet_id = SPREADSHEET_ID

@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from typing import List, Optional, Type
 from sqlalchemy.orm.exc import NoResultFound
 
-from bot.models.models import Key
+from models.models import Key
 
 
 class KeyService:

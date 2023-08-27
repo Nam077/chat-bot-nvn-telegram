@@ -1,12 +1,9 @@
 from typing import List
 
-from slugify import slugify
-from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Table
+from sqlalchemy import Column, Integer, ForeignKey, Table
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum
-
-from bot.utils.db import engine, engine_2
 
 Base = declarative_base()
 Base_2 = declarative_base()

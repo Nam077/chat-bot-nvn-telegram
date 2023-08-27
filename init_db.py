@@ -1,5 +1,4 @@
-from bot.utils.db import engine
-from bot.models import Base
-from bot.models.models import *
+from utils import engine
+from models import Base
 
 Base.metadata.create_all(bind=engine)

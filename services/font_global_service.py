@@ -4,10 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from enum import Enum
 from typing import List, Optional, Type
-
-from bot.models.models import FontGlobal
-
-
+from models.models import FontGlobal
 class FontGlobalService:
     def __init__(self, db: Session):
         self.db = db

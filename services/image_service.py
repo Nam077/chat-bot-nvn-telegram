@@ -1,10 +1,9 @@
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional, Type
-from enum import Enum
 from sqlalchemy.orm.exc import NoResultFound
 
-from bot.models.models import Image
+from models.models import Image
 
 
 class ImageService:

@@ -1,5 +1,5 @@
-from bot.services.key_service import KeyService
-from bot.utils.db import SessionLocal
+from services.key_service import KeyService
+from utils.db import SessionLocal
 
 db = SessionLocal()
 key_sv = KeyService(db)
