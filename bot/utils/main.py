@@ -1,6 +1,6 @@
-from bot.services.user_service import UserService
+from bot.services.key_service import KeyService
 from bot.utils.db import SessionLocal
 
 db = SessionLocal()
-user_service = UserService(db)
-print(user_service.get_all_users())
+key_sv = KeyService(db)
+print(key_sv.get_all_keys())
