@@ -1,7 +1,6 @@
 /.idea
 .idea
 dist
-.env
 keys/*.json
 build
 venv
