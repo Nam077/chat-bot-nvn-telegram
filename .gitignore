@@ -6,3 +6,4 @@ database/
 keys/*.json
 build
 venv
+build/main
