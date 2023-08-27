@@ -7,3 +7,4 @@ keys/*.json
 build
 venv
 build/main
+__pycache__/
