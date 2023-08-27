@@ -7,6 +7,7 @@ from telegram.ext import (
 )
 
 from bot.configs.logging import logger
+from bot.handlers.random_handle import RandomHandle
 from bot.handlers.tiktok_handle import get_conv_handler_tiktok
 from bot.services.font_global_service import FontGlobalService
 from bot.services.font_service import FontService
@@ -46,15 +47,16 @@ async def update_data(key_service: KeyService, tag_service: TagService, link_ser
 def main() -> None:
     db = SessionLocal()
     db2 = SessionLocal_2()
-    # (key_service, tag_service, link_service, image_service, message_service, font_service,
-    #  setting_service) = create_services(db)
-    # TELEGRAM_BOT_TOKEN = setting_service.get_setting_by_key('TELEGRAM_BOT_TOKEN').value
-    # application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    # application.add_handler(get_conv_handler_font())
-    # application.add_handler(get_conv_handler_tiktok())
-    # application.run_polling(allowed_updates=[Update.ALL_TYPES])
-    fontGlobalService = FontGlobalService(db2)
-    print(fontGlobalService.get_random_font_by_name())
+    font_global_service = FontGlobalService(db2)
+    random_handle = RandomHandle(font_global_service=font_global_service)
+    (key_service, tag_service, link_service, image_service, message_service, font_service,
+     setting_service) = create_services(db)
+    TELEGRAM_BOT_TOKEN = setting_service.get_setting_by_key('TELEGRAM_BOT_TOKEN').value
+    application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    application.add_handler(get_conv_handler_font())
+    application.add_handler(get_conv_handler_tiktok())
+    application.add_handler(random_handle.get_conv_handler_random_font())
+    application.run_polling(allowed_updates=[Update.ALL_TYPES])
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+from sqlalchemy import or_, func
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
@@ -65,8 +66,10 @@ class FontGlobalService:
         self.db.query(FontGlobal).delete()
         self.db.commit()
 
-    def get_random_font_by_name(self, name='', limit=10) -> list[Type[FontGlobal]]:
+    def get_random_font_by_name_or_category_name(self, name: str = None, limit: int = 10) -> list[Type[FontGlobal]]:
         query = self.db.query(FontGlobal)
-        if name:
-            query = query.filter(FontGlobal.name.ilike(f'%{name}%'))
-        return query.order_by(FontGlobal.id.desc()).limit(limit).all()
+        query = query.order_by(func.random())
+        if name not in ['', None]:
+            print(name)
+            query = query.filter(or_(FontGlobal.name.like(f"%{name}%"), FontGlobal.category_name.like(f"%{name}%")))
+        return query.limit(limit).all()

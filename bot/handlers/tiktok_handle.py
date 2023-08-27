@@ -11,14 +11,18 @@ TIKTOK_LINK, TIKTOK_DOWNLOAD = range(2)
 
 
 async def tiktok_start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    await update.message.reply_text("Gửi link Tiktok bạn muốn tải.")
+    await update.message.reply_text("Gửi link Tiktok bạn muốn tải, để hủy bỏ gõ /cancel.")
     return TIKTOK_LINK
 
 
 async def tiktok_download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    pattern = r'https:\/\/.*\.tiktok\.com'
     user = update.message.from_user
     logger.info("Tiktok link from %s: %s", user.first_name, update.message.text)
     tiktok_link = update.message.text
+    if not re.match(pattern, tiktok_link):
+        await update.message.reply_text("Link không hợp lệ, vui lòng gửi lại link.")
+        return TIKTOK_LINK
     response = requests.get(tiktok_link)
     final_redirected_url = response.url
     if 'tiktok.com' in tiktok_link:
@@ -49,7 +53,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
     await update.message.reply_text(
-        "Bye! I hope we can talk again some day.", reply_markup=ReplyKeyboardRemove()
+        "Tạm biệt! Hy vọng chúng ta có thể nói chuyện lại một ngày nào đó.", reply_markup=ReplyKeyboardRemove()
     )
     return ConversationHandler.END
 
