@@ -5,6 +5,7 @@ from telegram.ext import (
 )
 
 from configs.logging import logger
+from handlers.font_handle import FontHandler
 from handlers.random_handle import RandomHandle
 from handlers.tiktok_handle import get_conv_handler_tiktok
 from services.font_global_service import FontGlobalService
@@ -17,7 +18,6 @@ from services.message_service import MessageService
 from services.setting_service import SettingService
 from services.tag_service import TagService
 from utils.db import SessionLocal, SessionLocal_2
-from handlers.font_handle import get_conv_handler_font
 from warnings import filterwarnings
 from telegram.warnings import PTBUserWarning
 
@@ -42,6 +42,10 @@ async def update_data(key_service: KeyService, tag_service: TagService, link_ser
     logger.info(f"Updated data from Google Sheets in result: {result}")
 
 
+async def get_all_data(key_service: KeyService):
+    return key_service.get_all_keys()
+
+
 def main() -> None:
     db = SessionLocal()
     db2 = SessionLocal_2()
@@ -49,9 +53,12 @@ def main() -> None:
     random_handle = RandomHandle(font_global_service=font_global_service)
     (key_service, tag_service, link_service, image_service, message_service, font_service,
      setting_service) = create_services(db)
+    font_handle = FontHandler(key_service, setting_service, font_service)
+    keys = get_all_data(key_service)
+
     TELEGRAM_BOT_TOKEN = setting_service.get_setting_by_key('TELEGRAM_BOT_TOKEN').value
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    application.add_handler(get_conv_handler_font())
+    application.add_handler(font_handle.get_conv_handler_font())
     application.add_handler(get_conv_handler_tiktok())
     application.add_handler(random_handle.get_conv_handler_random_font())
     application.run_polling(allowed_updates=[Update.ALL_TYPES])

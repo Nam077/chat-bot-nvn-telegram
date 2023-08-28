@@ -1,3 +1,4 @@
+import asyncio
 import random
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove, InputMediaPhoto
 from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters, \
@@ -13,6 +14,8 @@ FONT_NAME, FONT_PHOTO, FONT_DOWNLOAD = range(3)
 class RandomHandle:
     def __init__(self, font_global_service: FontGlobalService):
         self.font_global_service = font_global_service
+        self.markup_font_send = None
+        self.media_group_send = None
 
     async def display_font_list(self, update: Update, context: ContextTypes.DEFAULT_TYPE, limit: int = 10,
                                 name: str = None):
@@ -20,6 +23,7 @@ class RandomHandle:
         if not random_fonts:
             return await update.message.reply_text("Không tìm thấy font nào, vui lòng thử lại.")
         media_group = []
+        await update.message.reply_chat_action('upload_photo')
         for random_font in random_fonts:
             media_group.append(InputMediaPhoto(media=random_font.thumbnail + '?w=692&h=461&ssl=1',
                                                caption=f'<b>Name:</b> {random_font.name}\n'
@@ -32,10 +36,10 @@ class RandomHandle:
             keyboard.append([InlineKeyboardButton(random_font.name, callback_data=f"font_{random_font.id}")])
         keyboard.append([InlineKeyboardButton("Exit", callback_data="exit")])
         inline_keyboard = InlineKeyboardMarkup(keyboard)
-        await update.message.reply_chat_action('upload_photo')
-        await update.message.reply_media_group(media_group)
+        self.media_group_send = await update.message.reply_media_group(media_group)
         await update.message.reply_chat_action('typing')
-        await update.message.reply_text("Vui lòng chọn một font để tải về.", reply_markup=inline_keyboard)
+        self.markup_font_send = await update.message.reply_text("Vui lòng chọn một font để tải về.",
+                                                                reply_markup=inline_keyboard)
         return FONT_DOWNLOAD
 
     async def random_font_begin(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -59,12 +63,15 @@ class RandomHandle:
         random_font_id = int(update.callback_query.data.split('_')[1])
         random_font = self.font_global_service.get_font_by_id(random_font_id)
         media_photo = []
+        await update.callback_query.message.reply_chat_action('upload_photo')
         for image in random_font.detail_images.split('\n'):
             media_photo.append(InputMediaPhoto(image))
         await update.callback_query.message.reply_media_group(media_photo)
-        await update.callback_query.message.reply_text(f"Link download: {random_font.link_drive}",
-                                                       reply_markup=InlineKeyboardMarkup(
-                                                           [[InlineKeyboardButton("Exit", callback_data="exit")]]))
+        await update.callback_query.message.reply_text(
+            f"Chào {update.callback_query.from_user.first_name}\n<b>Tên:</b> {random_font.name}<b>\n<a href='{random_font.link_drive}'>Link download</a></b>\n<b>Category:</b> {random_font.category_name}\n<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>",
+            parse_mode='HTML',
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("Exit", callback_data="exit")]]))
 
     async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         user = update.message.from_user
@@ -77,6 +84,14 @@ class RandomHandle:
     async def send_call_back_exit(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         await update.callback_query.message.reply_text("Tạm biệt!")
         # remove all InlineKeyboardButton
+        await self.markup_font_send.delete()
+
+        # remove all InputMediaPhoto using promise all
+        async def delete_media_messages():
+            await asyncio.gather(*(message.delete() for message in self.media_group_send))
+
+        asyncio.create_task(delete_media_messages())
+
         await update.callback_query.message.edit_reply_markup(reply_markup=None)
         return ConversationHandler.END
 

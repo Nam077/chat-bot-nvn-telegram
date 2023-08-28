@@ -30,18 +30,20 @@ async def tiktok_download(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
             await update.message.reply_text("Video không tồn tại, vui lòng gửi lại link.")
             return TIKTOK_LINK
         else:
+            video_id = await update.message.reply_text("Đang tải video, vui lòng chờ...")
+            await update.message.reply_chat_action('upload_video')
             id_url = id_url.group(1)
             url = f'https://api16-normal-c-useast1a.tiktokv.com/aweme/v1/feed/?aweme_id={id_url}'
             response = requests.get(url)
             video_url = response.json()['aweme_list'][0]['video']['play_addr']['url_list'][0]
-            await update.message.reply_chat_action('upload_video')
-            # sending video and description
             await update.message.reply_media_group([
                 InputMediaVideo(video_url,
                                 caption=f'<a href="{tiktok_link}">Tiktok Link</a>\n<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>',
                                 parse_mode='HTML', supports_streaming=True),
 
             ])
+            await video_id.delete()
+            print('done')
             return ConversationHandler.END
     else:
         await update.message.reply_text("Video không tồn tại, vui lòng gửi lại link.")
@@ -61,7 +63,8 @@ def get_conv_handler_tiktok() -> ConversationHandler:
     conv_handler_tiktok = ConversationHandler(
         entry_points=[CommandHandler("tiktok", tiktok_start)],
         states={
-            TIKTOK_LINK: [MessageHandler(filters.TEXT & ~filters.COMMAND, tiktok_download)],
+            TIKTOK_LINK: [CommandHandler("cancel", cancel),
+                          MessageHandler(filters.TEXT, tiktok_download)],
         },
         fallbacks=[CommandHandler("cancel", cancel)],
     )
