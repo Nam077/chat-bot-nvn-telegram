@@ -6,8 +6,10 @@ from telegram.ext import (
 
 from configs.logging import logger
 from handlers.font_handle import FontHandler
+from handlers.font_shop_handle import FontShopHandle
 from handlers.random_handle import RandomHandle
 from handlers.tiktok_handle import get_conv_handler_tiktok
+from services.font_crawler_service import FontCrawlerService
 from services.font_global_service import FontGlobalService
 from services.font_service import FontService
 from services.google_sheet import GoogleSheetsReader
@@ -32,11 +34,12 @@ def create_services(db: Session):
     message_service = MessageService(db)
     font_service = FontService(db)
     setting_service = SettingService(db)
-    return key_service, tag_service, link_service, image_service, message_service, font_service, setting_service
+    font_crawler_service = FontCrawlerService()
+    return key_service, tag_service, link_service, image_service, message_service, font_service, setting_service, font_crawler_service
 
 
-async def update_data(key_service: KeyService, tag_service: TagService, link_service: LinkService,
-                      image_service: ImageService, message_service: MessageService, font_service: FontService):
+def update_data(key_service: KeyService, tag_service: TagService, link_service: LinkService,
+                image_service: ImageService, message_service: MessageService, font_service: FontService):
     reader = GoogleSheetsReader()
     result = reader.update_data(key_service, tag_service, link_service, image_service, message_service, font_service)
     logger.info(f"Updated data from Google Sheets in result: {result}")
@@ -52,14 +55,15 @@ def main() -> None:
     font_global_service = FontGlobalService(db2)
     random_handle = RandomHandle(font_global_service=font_global_service)
     (key_service, tag_service, link_service, image_service, message_service, font_service,
-     setting_service) = create_services(db)
+     setting_service, font_crawler_service) = create_services(db)
+    # update_data(key_service, tag_service, link_service, image_service, message_service, font_service)
     font_handle = FontHandler(key_service, setting_service, font_service)
-    keys = get_all_data(key_service)
-
+    font_shop_handle = FontShopHandle(font_crawler_service)
     TELEGRAM_BOT_TOKEN = setting_service.get_setting_by_key('TELEGRAM_BOT_TOKEN').value
     application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     application.add_handler(font_handle.get_conv_handler_font())
     application.add_handler(get_conv_handler_tiktok())
+    application.add_handler(font_shop_handle.get_conv_handler_font_shop())
     application.add_handler(random_handle.get_conv_handler_random_font())
     application.run_polling(allowed_updates=[Update.ALL_TYPES])
 

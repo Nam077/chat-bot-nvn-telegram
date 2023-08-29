@@ -1,9 +1,11 @@
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from typing import List, Optional, Type, Dict
 from sqlalchemy.orm.exc import NoResultFound
 
-from models.models import Key, Link, Image, Font, Tag, Message
+from models.models import Key, Link, Image, Font, Tag, Message, association_table_link_font, \
+    association_table_image_font, association_table_font_tag, association_table_message_font
 
 
 class FontService:
@@ -16,7 +18,6 @@ class FontService:
         try:
             new_font = Font(name=name, post_link=post_link, description=description,
                             status=status)
-
             if keys:
                 new_font.keys = keys
             if links:
@@ -90,5 +91,9 @@ class FontService:
         return False
 
     def delete_all_fonts(self) -> None:
+        self.db.query(association_table_link_font).delete()
+        self.db.query(association_table_image_font).delete()
+        self.db.query(association_table_font_tag).delete()
+        self.db.query(association_table_message_font).delete()
         self.db.query(Font).delete()
         self.db.commit()

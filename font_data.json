@@ -1,0 +1,357 @@
+{
+  "search_mode": "families",
+  "filter_mode": "all_typefaces",
+  "main_index": "families",
+  "page": 1,
+  "families": {
+    "took": 7,
+    "timed_out": false,
+    "_shards": {
+      "total": 5,
+      "successful": 5,
+      "failed": 0
+    },
+    "hits": {
+      "total": 16,
+      "max_score": 0.8513282,
+      "hits": [
+        {
+          "_index": "families_tce_20230816072702504",
+          "_type": "family",
+          "_id": "6036970",
+          "_score": 0.8513282,
+          "_source": {
+            "localized_original_starting_price": {
+              "de": {
+                "EUR": "28,99 \u20ac",
+                "USD": "29 $",
+                "AUD": "45 AU$",
+                "GBP": "24,99 \u00a3"
+              },
+              "en": {
+                "EUR": "\u20ac28.99",
+                "USD": "$29",
+                "AUD": "AU$45",
+                "GBP": "\u00a324.99"
+              }
+            },
+            "bestseller_sortno": 173,
+            "is_new_release": false,
+            "webfont": {
+              "css_class": "webfont-a649ff31d012b2840e543916232cced7",
+              "url": "/webfonts/a649ff31d012b2840e543916232cced7.css",
+              "css_font_family": "a649ff31d012b2840e543916232cc"
+            },
+            "webfonts_available": true,
+            "single_style_available": true,
+            "featured": false,
+            "on_sale": false,
+            "transform_lowercase": false,
+            "typeface_count": 14,
+            "localized_starting_price": {
+              "de": {
+                "EUR": "28,99 \u20ac",
+                "USD": "29 $",
+                "AUD": "45 AU$",
+                "GBP": "24,99 \u00a3"
+              },
+              "en": {
+                "EUR": "\u20ac28.99",
+                "USD": "$29",
+                "AUD": "AU$45",
+                "GBP": "\u00a324.99"
+              }
+            },
+            "url_string": "facundo",
+            "package_count": 2,
+            "typeface_data": [
+              {
+                "webfont": {
+                  "css_class": "webfont-34fa891ef0dd88cfb1bc04c684747b5c",
+                  "url": "/webfonts/34fa891ef0dd88cfb1bc04c684747b5c.css",
+                  "css_font_family": "34fa891ef0dd88cfb1bc04c684747"
+                },
+                "name": "Facundo Thin",
+                "weight_name": "Thin",
+                "layoutfont_id": "34fa891ef0dd88cfb1bc04c684747b5c"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-797db0ff40097cedc79d11727ff71956",
+                  "url": "/webfonts/797db0ff40097cedc79d11727ff71956.css",
+                  "css_font_family": "797db0ff40097cedc79d11727ff71"
+                },
+                "name": "Facundo Thin Italic",
+                "weight_name": "Thin Italic",
+                "layoutfont_id": "797db0ff40097cedc79d11727ff71956"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-4d9c618f5e810194ba11489cd863ed07",
+                  "url": "/webfonts/4d9c618f5e810194ba11489cd863ed07.css",
+                  "css_font_family": "4d9c618f5e810194ba11489cd863e"
+                },
+                "name": "Facundo Extra Light",
+                "weight_name": "Extra Light",
+                "layoutfont_id": "4d9c618f5e810194ba11489cd863ed07"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-1051f702136a346efbb2b0531ef3383b",
+                  "url": "/webfonts/1051f702136a346efbb2b0531ef3383b.css",
+                  "css_font_family": "1051f702136a346efbb2b0531ef33"
+                },
+                "name": "Facundo Extra Light Italic",
+                "weight_name": "Extra Light Italic",
+                "layoutfont_id": "1051f702136a346efbb2b0531ef3383b"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-19e6e57b5a914d086803d62fd2f41baf",
+                  "url": "/webfonts/19e6e57b5a914d086803d62fd2f41baf.css",
+                  "css_font_family": "19e6e57b5a914d086803d62fd2f41"
+                },
+                "name": "Facundo Light",
+                "weight_name": "Light",
+                "layoutfont_id": "19e6e57b5a914d086803d62fd2f41baf"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-37b4bb2b86141e1b23eed4de434d9e4d",
+                  "url": "/webfonts/37b4bb2b86141e1b23eed4de434d9e4d.css",
+                  "css_font_family": "37b4bb2b86141e1b23eed4de434d9"
+                },
+                "name": "Facundo Light Italic",
+                "weight_name": "Light Italic",
+                "layoutfont_id": "37b4bb2b86141e1b23eed4de434d9e4d"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-5448d958a6ea329ab3edc0cf6991fc43",
+                  "url": "/webfonts/5448d958a6ea329ab3edc0cf6991fc43.css",
+                  "css_font_family": "5448d958a6ea329ab3edc0cf6991f"
+                },
+                "name": "Facundo Regular",
+                "weight_name": "Regular",
+                "layoutfont_id": "5448d958a6ea329ab3edc0cf6991fc43"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-82ac5680db6053bcaea91fd1fd4b6d51",
+                  "url": "/webfonts/82ac5680db6053bcaea91fd1fd4b6d51.css",
+                  "css_font_family": "82ac5680db6053bcaea91fd1fd4b6"
+                },
+                "name": "Facundo Regular Italic",
+                "weight_name": "Regular Italic",
+                "layoutfont_id": "82ac5680db6053bcaea91fd1fd4b6d51"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-a649ff31d012b2840e543916232cced7",
+                  "url": "/webfonts/a649ff31d012b2840e543916232cced7.css",
+                  "css_font_family": "a649ff31d012b2840e543916232cc"
+                },
+                "name": "Facundo Semi Bold",
+                "weight_name": "Semi Bold",
+                "layoutfont_id": "a649ff31d012b2840e543916232cced7"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-d74b63edde822d1b1e85cbed70194e63",
+                  "url": "/webfonts/d74b63edde822d1b1e85cbed70194e63.css",
+                  "css_font_family": "d74b63edde822d1b1e85cbed70194"
+                },
+                "name": "Facundo Semi Bold Italic",
+                "weight_name": "Semi Bold Italic",
+                "layoutfont_id": "d74b63edde822d1b1e85cbed70194e63"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-7f8ff0d5b64041b976c9133f4191da03",
+                  "url": "/webfonts/7f8ff0d5b64041b976c9133f4191da03.css",
+                  "css_font_family": "7f8ff0d5b64041b976c9133f4191d"
+                },
+                "name": "Facundo Bold",
+                "weight_name": "Bold",
+                "layoutfont_id": "7f8ff0d5b64041b976c9133f4191da03"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-e5f8f25cef7de550161728060f42d9cb",
+                  "url": "/webfonts/e5f8f25cef7de550161728060f42d9cb.css",
+                  "css_font_family": "e5f8f25cef7de550161728060f42d"
+                },
+                "name": "Facundo Bold Italic",
+                "weight_name": "Bold Italic",
+                "layoutfont_id": "e5f8f25cef7de550161728060f42d9cb"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-617d4220f0cb92423b8c1a45ededdabf",
+                  "url": "/webfonts/617d4220f0cb92423b8c1a45ededdabf.css",
+                  "css_font_family": "617d4220f0cb92423b8c1a45ededd"
+                },
+                "name": "Facundo Black",
+                "weight_name": "Black",
+                "layoutfont_id": "617d4220f0cb92423b8c1a45ededdabf"
+              },
+              {
+                "webfont": {
+                  "css_class": "webfont-9e37a26bf43876353b158acb22ba07df",
+                  "url": "/webfonts/9e37a26bf43876353b158acb22ba07df.css",
+                  "css_font_family": "9e37a26bf43876353b158acb22ba0"
+                },
+                "name": "Facundo Black Italic",
+                "weight_name": "Black Italic",
+                "layoutfont_id": "9e37a26bf43876353b158acb22ba07df"
+              }
+            ],
+            "designers": [
+              "Daniel Hern\u00e1ndez",
+              "Paula Nazal Selaive"
+            ],
+            "name": "Facundo",
+            "clean_name": "Facundo",
+            "images": [],
+            "design_year": null,
+            "foundry": "Latinotype",
+            "transform_uppercase": false,
+            "layoutfont_id": "a649ff31d012b2840e543916232cced7",
+            "special_sample_string": null,
+            "opentype_features": [
+              "locl",
+              "mark",
+              "sups",
+              "ordn",
+              "mkmk",
+              "case",
+              "liga",
+              "salt",
+              "ccmp",
+              "ss02",
+              "c2sc",
+              "smcp",
+              "frac",
+              "ss01",
+              "kern"
+            ]
+          }
+        }
+      ]
+    },
+    "suggest": {
+      "suggested_terms": [
+        {
+          "text": "selaive",
+          "offset": 0,
+          "length": 7,
+          "options": [
+            {
+              "text": "selaiv",
+              "score": 0.8333333,
+              "freq": 16
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "designers": {
+    "took": 3,
+    "timed_out": false,
+    "_shards": {
+      "total": 5,
+      "successful": 5,
+      "failed": 0
+    },
+    "hits": {
+      "total": 1,
+      "max_score": 0.0,
+      "hits": []
+    },
+    "suggest": {
+      "suggested_terms": [
+        {
+          "text": "selaive",
+          "offset": 0,
+          "length": 7,
+          "options": [
+            {
+              "text": "selaiv",
+              "score": 0.8333333,
+              "freq": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "fontlists": {
+    "took": 3,
+    "timed_out": false,
+    "_shards": {
+      "total": 5,
+      "successful": 5,
+      "failed": 0
+    },
+    "hits": {
+      "total": 1,
+      "max_score": 0.0,
+      "hits": []
+    },
+    "suggest": {
+      "suggested_terms": [
+        {
+          "text": "selaive",
+          "offset": 0,
+          "length": 7,
+          "options": [
+            {
+              "text": "selaiv",
+              "score": 0.8333333,
+              "freq": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "foundries": {
+    "took": 3,
+    "timed_out": false,
+    "_shards": {
+      "total": 5,
+      "successful": 5,
+      "failed": 0
+    },
+    "hits": {
+      "total": 1,
+      "max_score": 0.0,
+      "hits": []
+    },
+    "suggest": {
+      "suggested_terms": [
+        {
+          "text": "selaive",
+          "offset": 0,
+          "length": 7,
+          "options": [
+            {
+              "text": "selaiv",
+              "score": 0.8333333,
+              "freq": 1
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "query_details": {
+    "original_query": "selaive",
+    "has_corrections": false,
+    "has_removals": false,
+    "corrected_query": "selaive",
+    "corrected_query_html": "selaive",
+    "removed_query_terms": []
+  }
+}

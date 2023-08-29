@@ -33,6 +33,7 @@ class SettingService:
     def get_setting_by_key(self, key: str) -> Setting | Type[Setting] | None:
         try:
             setting = self.db.query(Setting).filter_by(key=key).first()
+
             if setting is None:
                 create_setting = self.create_setting(key=key)
                 return create_setting
@@ -40,6 +41,18 @@ class SettingService:
                 return setting
         except NoResultFound:
             return None
+
+    def get_setting_by_value_bool(self, key: str) -> bool:
+        try:
+            setting = self.db.query(Setting).filter_by(key=key).first()
+            print(setting)
+            if setting is None:
+                create_setting = self.create_setting(key=key, value='False')
+                return create_setting.value == 'True'
+            else:
+                return setting.value == 'True'
+        except NoResultFound:
+            return False
 
     def update_setting(self, setting_id: int, new_key: str, new_value: str) -> Setting:
         setting = self.get_setting_by_id(setting_id)

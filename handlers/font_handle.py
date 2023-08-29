@@ -1,8 +1,13 @@
 import random
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove
+from builtins import str
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove, InputMediaPhoto
 from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, \
     ConversationHandler, CallbackQueryHandler
+
+from configs.config import TELEGRAM_BOT_USERNAME
 from configs.logging import logger
+from models.models import Font
 from services.font_service import FontService
 from services.key_service import KeyService
 from services.setting_service import SettingService
@@ -14,6 +19,16 @@ class FontHandler:
         self.key_service = key_service
         self.setting_service = setting_service
         self.font_service = font_service
+        self.key_list = self.key_service.get_all_keys()
+
+    async def get_font_by_message(self, message: str):
+        result = []
+        for key in self.key_list:
+            if key.value in message.lower():
+                result.append(key.font)
+                print(key.font)
+
+        return result
 
     async def font(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         await update.message.reply_text("Vui lòng gửi tên font bạn muốn tìm kiếm.")
@@ -23,12 +38,17 @@ class FontHandler:
         user = update.message.from_user
         logger.info("Font name from %s: %s", user.first_name, update.message.text)
         font_name = update.message.text
-        if font_name == "azkia":
-            await update.message.reply_text("Please send the font photo.")
-            return self.FONT_PHOTO
-        else:
-            await update.message.reply_text("Please send the font name you want to search for.")
+        font = await self.get_font_by_message(font_name)
+        if not font:
+            await update.message.reply_text("Không tìm thấy font nào, vui lòng thử lại.")
             return self.FONT_NAME
+        if self.setting_service.get_setting_by_value_bool('MULTIPLE_FONT'):
+            if 1 < len(font) <= 10:
+                await self.send_multiple_font(update, context, font)
+            elif len(font) > 10:
+                await self.send_multiple_font_string(update, context, font)
+        else:
+            await self.send_one_font(update, context, font[0])
 
     async def download_button(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         keyboard = [[InlineKeyboardButton("Download", callback_data="download")]]
@@ -51,7 +71,7 @@ class FontHandler:
 
     def get_conv_handler_font(self) -> ConversationHandler:
         conv_handler_font = ConversationHandler(
-            entry_points=[CommandHandler("font", self.font)],
+            entry_points=[CommandHandler("fontvh", self.font)],
             states={
                 self.FONT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.font_photo)],
                 self.FONT_PHOTO: [MessageHandler(filters.PHOTO, self.download_button)],
@@ -61,10 +81,35 @@ class FontHandler:
         )
         return conv_handler_font
 
+    async def send_multiple_font(self, update: Update, context: ContextTypes.DEFAULT_TYPE, font):
+        pass
 
-if __name__ == "__main__":
-    font_bot = FontBot()
-    conv_handler_font = font_bot.get_conv_handler_font()
+    async def send_multiple_font_string(self, update: Update, context: ContextTypes.DEFAULT_TYPE, font):
+        pass
 
-    # Add conv_handler_font to your Telegram updater/dispatcher
-    # updater.dispatcher.add_handler(conv_handler_font)
+    async def send_one_font(self, update: Update, context: ContextTypes.DEFAULT_TYPE, font: Font):
+        message = (
+            f"Xin chào {update.message.from_user.first_name}\n"
+            f"<b>Tên:</b> {font.name}\n"
+            f"<b>Link bài viết:</b> <a href='{font.post_link}'>Link</a>\n"
+            f"<b>Link download:</b>\n{await self.get_link_download(font)}\n"
+            f"<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>"
+        )
+        await self.send_image_font(update, context, font)
+        await update.message.reply_text(message, parse_mode='HTML')
+        return ConversationHandler.END
+
+    async def send_image_font(self, update: Update, context: ContextTypes.DEFAULT_TYPE, font: Font):
+        images = font.images
+        random_images = random.sample(images, min(10, len(images)))
+        media_photo = [InputMediaPhoto(media=images.url, caption=font.name) for images in random_images]
+        await update.message.reply_chat_action('upload_photo')
+        await update.message.reply_media_group(media_photo)
+
+    async def get_link_download(self, font: Font):
+        links = font.links
+        random_links = random.sample(links, min(10, len(links)))
+
+        return '\n'.join(
+            f"<a href='{link.url}'><b>Link {index + 1}</b></a>" for index, link in enumerate(random_links)
+        )

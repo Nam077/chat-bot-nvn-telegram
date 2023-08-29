@@ -26,26 +26,26 @@ class EnumTableName(Enum):
 # Define association
 association_table_link_font = Table(
     EnumTableName.LINK_FONT_ASSOCIATION.value, Base.metadata,
-    Column('link_id', Integer, ForeignKey(f'{EnumTableName.LINKS.value}.id', ondelete='CASCADE')),
-    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id', ondelete='CASCADE'))
+    Column('link_id', Integer, ForeignKey(f'{EnumTableName.LINKS.value}.id')),
+    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id'))
 )
 
 association_table_image_font = Table(
     EnumTableName.IMAGE_FONT_ASSOCIATION.value, Base.metadata,
-    Column('image_id', Integer, ForeignKey(f'{EnumTableName.IMAGES.value}.id', ondelete='CASCADE')),
-    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id', ondelete='CASCADE'))
+    Column('image_id', Integer, ForeignKey(f'{EnumTableName.IMAGES.value}.id')),
+    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id'))
 )
 
 association_table_message_font = Table(
     EnumTableName.MESSAGE_FONT_ASSOCIATION.value, Base.metadata,
-    Column('message_id', Integer, ForeignKey(f'{EnumTableName.MESSAGES.value}.id', ondelete='CASCADE')),
-    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id', ondelete='CASCADE'))
+    Column('message_id', Integer, ForeignKey(f'{EnumTableName.MESSAGES.value}.id')),
+    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id'))
 )
 
 association_table_font_tag = Table(
     EnumTableName.FONT_TAG_ASSOCIATION.value, Base.metadata,
-    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id', ondelete='CASCADE')),
-    Column('tag_id', Integer, ForeignKey(f'{EnumTableName.TAGS.value}.id', ondelete='CASCADE'))
+    Column('font_id', Integer, ForeignKey(f'{EnumTableName.FONTS.value}.id')),
+    Column('tag_id', Integer, ForeignKey(f'{EnumTableName.TAGS.value}.id'))
 )
 
 
@@ -122,12 +122,15 @@ class Font(Base):
     slug: Mapped[str] = mapped_column(unique=True, nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
     status: Mapped[bool] = mapped_column(nullable=False, default=True)
-    keys: Mapped[List[Key]] = relationship("Key", back_populates="font")
-    links: Mapped[List[Link]] = relationship("Link", secondary=association_table_link_font, back_populates="fonts")
-    images: Mapped[List[Image]] = relationship("Image", secondary=association_table_image_font, back_populates="fonts")
+    keys: Mapped[List[Key]] = relationship("Key", back_populates="font", cascade='all, delete')
+    links: Mapped[List[Link]] = relationship("Link", secondary=association_table_link_font, back_populates="fonts",
+                                             cascade="all, delete", passive_deletes=True)
+    images: Mapped[List[Image]] = relationship("Image", secondary=association_table_image_font, back_populates="fonts",
+                                               cascade="all, delete", passive_deletes=True)
     messages: Mapped[List[Message]] = relationship("Message", secondary=association_table_message_font,
-                                                   back_populates="fonts")
-    tags: Mapped[List[Tag]] = relationship("Tag", secondary=association_table_font_tag, back_populates="fonts")
+                                                   back_populates="fonts", cascade="all, delete", passive_deletes=True)
+    tags: Mapped[List[Tag]] = relationship("Tag", secondary=association_table_font_tag, back_populates="fonts",
+                                           cascade="all, delete", passive_deletes=True)
 
     def __str__(self):
         return f'Font(id={self.id}, name={self.name}, post_link={self.post_link}, slug={self.slug}, description={self.description}, status={self.status}, keys={self.keys}, links={self.links}, images={self.images}, messages={self.messages}, tags={self.tags})'
