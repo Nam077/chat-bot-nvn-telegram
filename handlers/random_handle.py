@@ -1,109 +1,158 @@
 import asyncio
-import random
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove, InputMediaPhoto
-from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters, \
-    ConversationHandler, CallbackQueryHandler
-import re
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from telegram.ext import (
+    ConversationHandler,
+    CommandHandler,
+    MessageHandler,
+    filters,
+    CallbackQueryHandler,
+    CallbackContext,
+)
 from configs.config import TELEGRAM_BOT_USERNAME
-from configs.logging import logger
 from services.font_global_service import FontGlobalService
 
-FONT_NAME, FONT_PHOTO, FONT_DOWNLOAD = range(3)
+FONT_NAME, FONT_DOWNLOAD = range(2)
 
 
-class RandomHandle:
+class RandomFontHandler:
     def __init__(self, font_global_service: FontGlobalService):
         self.font_global_service = font_global_service
-        self.markup_font_send = None
-        self.media_group_send = None
+        self.messages_to_cleanup = []  # List to store messages that need cleanup
+        self.media_group_to_cleanup = []
+        self.messages_to_cleanup_exit = []
+        self.font_name = None
 
-    async def display_font_list(self, update: Update, context: ContextTypes.DEFAULT_TYPE, limit: int = 10,
-                                name: str = None):
-        random_fonts = self.font_global_service.get_random_font_by_name_or_category_name(limit=10, name=name)
+    async def add_message_to_cleanup(self, message):
+        self.messages_to_cleanup.append(message)
+
+    async def add_media_group_to_cleanup(self, media_group):
+        self.media_group_to_cleanup.append(media_group)
+
+    async def cleanup_messages(self):
+        await asyncio.gather(*(message.delete() for message in self.messages_to_cleanup))
+        self.messages_to_cleanup = []
+
+    async def cleanup_media_groups(self):
+        for media_group in self.media_group_to_cleanup:
+            await asyncio.gather(*(message.delete() for message in media_group))
+        self.media_group_to_cleanup = []
+
+    async def cleanup_exit_button(self, update, context: CallbackContext) -> None:
+        await asyncio.gather(*(message.delete() for message in self.messages_to_cleanup_exit))
+        self.messages_to_cleanup_exit = []
+
+    async def display_random_fonts(self, update, context, limit=10, name=None):
+        random_fonts = self.font_global_service.get_random_font_by_name_or_category_name(limit=limit, name=name)
         if not random_fonts:
             return await update.message.reply_text("Không tìm thấy font nào, vui lòng thử lại.")
+
         media_group = []
         await update.message.reply_chat_action('upload_photo')
-        for random_font in random_fonts:
-            media_group.append(InputMediaPhoto(media=random_font.thumbnail + '?w=692&h=461&ssl=1',
-                                               caption=f'<b>Name:</b> {random_font.name}\n'
-                                                       f'<b>Category:</b> {random_font.category_name}\n'
-                                                       f'<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>',
-                                               parse_mode='HTML'))
 
-        keyboard = []
         for random_font in random_fonts:
-            keyboard.append([InlineKeyboardButton(random_font.name, callback_data=f"font_{random_font.id}")])
-        keyboard.append([InlineKeyboardButton("Exit", callback_data="exit")])
+            media_group.append(
+                InputMediaPhoto(
+                    media=random_font.thumbnail + '?w=692&h=461&ssl=1',
+                    caption=f'<b>Name:</b> {random_font.name}\n'
+                            f'<b>Category:</b> {random_font.category_name}\n'
+                            f'<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>',
+                    parse_mode='HTML'
+                )
+            )
+
+        keyboard = [[InlineKeyboardButton(random_font.name, callback_data=f"font_{random_font.id}")]
+                    for random_font in random_fonts]
+        keyboard.append([InlineKeyboardButton("Thoát", callback_data="exit")])
         inline_keyboard = InlineKeyboardMarkup(keyboard)
-        self.media_group_send = await update.message.reply_media_group(media_group)
+
+        media_group_message = await update.message.reply_media_group(media_group)
+        await self.add_media_group_to_cleanup(media_group_message)
         await update.message.reply_chat_action('typing')
-        self.markup_font_send = await update.message.reply_text("Vui lòng chọn một font để tải về.",
-                                                                reply_markup=inline_keyboard)
+        await self.add_message_to_cleanup(update.message)
+        message_button = await update.message.reply_text(
+            "Vui lòng chọn một font để tải về. Nếu muốn xem thêm thì gõ /view_more.",
+            reply_markup=inline_keyboard)
+        self.messages_to_cleanup.append(message_button)
         return FONT_DOWNLOAD
 
-    async def random_font_begin(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        await update.message.reply_text(
-            "Vui lòng gửi một keyword để tìm kiếm font ngẫu nhiên, nếu bỏ qua để random ngẫu nhiên thì gõ /skip.")
-        return FONT_NAME
+    async def exit_and_cleanup(self, update, context: CallbackContext) -> None:
+        await self.cleanup_exit_button(update, context)
+        await self.cleanup_messages()
+        await self.cleanup_media_groups()
+        await update.callback_query.message.reply_text("Tạm biệt!")
 
-    async def skip_name(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        logger.info("User %s skipped the font name.", update.message.from_user.first_name)
-        await self.display_font_list(update, context)
-        return FONT_DOWNLOAD
+    async def handle_font_download(self, update, context: CallbackContext) -> int | None:
+        if update.callback_query.data == "exit":
+            await self.exit_and_cleanup(update, context)
+            return ConversationHandler.END
 
-    async def send_font_random(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        user = update.message.from_user
-        logger.info("Font name from %s: %s", user.first_name, update.message.text)
-        font_name = update.message.text
-        await self.display_font_list(update, context, name=font_name)
-        return FONT_DOWNLOAD
-
-    async def download_font(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        await self.cleanup_exit_button(update, context)
         random_font_id = int(update.callback_query.data.split('_')[1])
         random_font = self.font_global_service.get_font_by_id(random_font_id)
-        media_photo = []
+
+        media_photo = [InputMediaPhoto(image) for image in random_font.detail_images.split('\n')]
         await update.callback_query.message.reply_chat_action('upload_photo')
-        for image in random_font.detail_images.split('\n'):
-            media_photo.append(InputMediaPhoto(image))
         await update.callback_query.message.reply_media_group(media_photo)
+        buttons = [
+            [InlineKeyboardButton("Download", url=random_font.link_drive)]]
+        inline_keyboard = InlineKeyboardMarkup(buttons)
+
         await update.callback_query.message.reply_text(
-            f"Chào {update.callback_query.from_user.first_name}\n<b>Tên:</b> {random_font.name}<b>\n<a href='{random_font.link_drive}'>Link download</a></b>\n<b>Category:</b> {random_font.category_name}\n<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>",
-            parse_mode='HTML',
-            reply_markup=InlineKeyboardMarkup(
-                [[InlineKeyboardButton("Exit", callback_data="exit")]]))
-
-    async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        user = update.message.from_user
-        logger.info("User %s canceled the conversation.", user.first_name)
-        await update.message.reply_text(
-            "Tạm biệt!.", reply_markup=ReplyKeyboardRemove()
+            f"Chào {update.callback_query.from_user.first_name}\n<b>Tên:</b> {random_font.name}<b>\n"
+            f"<a href='{random_font.link_drive}'>Link download</a></b>\n<b>Category:</b> "
+            f"{random_font.category_name}\n<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>",
+            parse_mode='HTML', reply_markup=inline_keyboard
         )
-        return ConversationHandler.END
+        exit_button = InlineKeyboardButton("Exit", callback_data="exit")
+        inline_keyboard = InlineKeyboardMarkup([[exit_button]])
+        exit_button = await update.callback_query.message.reply_text(
+            "Bấm exit để thoát khỏi", reply_markup=inline_keyboard
+        )
+        self.messages_to_cleanup_exit.append(exit_button)
 
-    async def send_call_back_exit(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        await update.callback_query.message.reply_text("Tạm biệt!")
-        # remove all InlineKeyboardButton
-        await self.markup_font_send.delete()
+    # Trong lớp RandomFontHandler:
+    async def handle_view_more(self, update, context: CallbackContext) -> None:
+        print(self.font_name)
+        await self.display_random_fonts(update, context, limit=10, name=self.font_name)
+        return FONT_DOWNLOAD
 
-        # remove all InputMediaPhoto using promise all
-        async def delete_media_messages():
-            await asyncio.gather(*(message.delete() for message in self.media_group_send))
-
-        asyncio.create_task(delete_media_messages())
-
-        await update.callback_query.message.edit_reply_markup(reply_markup=None)
-        return ConversationHandler.END
-
-    def get_conv_handler_random_font(self) -> ConversationHandler:
-        conv_handler_random_font = ConversationHandler(
-            entry_points=[CommandHandler("random", self.random_font_begin)],
+    def get_random_font_handler(self) -> ConversationHandler:
+        conv_handler = ConversationHandler(
+            entry_points=[CommandHandler("random", self.start_random_font)],
             states={
-                FONT_NAME: [CommandHandler("skip", self.skip_name), MessageHandler(filters.TEXT & ~filters.COMMAND,
-                                                                                   self.send_font_random)],
-                FONT_DOWNLOAD: [CallbackQueryHandler(self.download_font, pattern="^font_"),
-                                CallbackQueryHandler(self.send_call_back_exit, pattern="^exit$")],
+                FONT_NAME: [CommandHandler("skip", self.skip_font_name),
+                            MessageHandler(filters.TEXT & ~filters.COMMAND, self.receive_font_name)],
+                FONT_DOWNLOAD: [CallbackQueryHandler(self.handle_font_download, pattern="^font_|exit$"),
+                                CommandHandler("view_more", self.handle_view_more)]
+
             },
             fallbacks=[CommandHandler("cancel", self.cancel)],
         )
-        return conv_handler_random_font
+        return conv_handler
+
+    async def start_random_font(self, update, context: CallbackContext) -> int:
+        message_start = await update.message.reply_text(
+            "Vui lòng gửi một keyword để tìm kiếm font ngẫu nhiên, nếu bỏ qua để random ngẫu nhiên thì gõ /skip."
+        )
+        self.messages_to_cleanup.append(message_start)
+        return FONT_NAME
+
+    async def cancel(self, update, context: CallbackContext) -> int:
+        await self.cleanup_exit_button(update, context)
+        await self.cleanup_messages()
+        await self.cleanup_media_groups()
+        return ConversationHandler.END
+
+    async def skip_font_name(self, update, context: CallbackContext) -> int:
+
+        await self.cleanup_messages()
+        await self.cleanup_media_groups()
+        await self.display_random_fonts(update, context)
+        return FONT_DOWNLOAD
+
+    async def receive_font_name(self, update, context: CallbackContext) -> int:
+        await self.cleanup_messages()
+        await self.cleanup_media_groups()
+        self.font_name = update.message.text
+        await self.display_random_fonts(update, context, name=self.font_name)
+        return FONT_DOWNLOAD

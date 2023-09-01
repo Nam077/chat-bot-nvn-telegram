@@ -5,8 +5,10 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 import os
 import pandas as pd
-from jupyterlab_server import slugify
 import concurrent.futures
+
+from slugify import slugify
+
 from configs.config import FANPAGE_FACEBOOK_URL, SPREADSHEET_ID
 from services.font_service import FontService
 from services.image_service import ImageService
