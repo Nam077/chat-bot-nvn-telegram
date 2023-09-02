@@ -60,8 +60,14 @@ class RandomFontHandler:
                 )
             )
 
-        keyboard = [[InlineKeyboardButton(random_font.name, callback_data=f"font_{random_font.id}")]
-                    for random_font in random_fonts]
+        buttons_per_row = 2
+        keyboard = [
+            [
+                InlineKeyboardButton(random_font.name, callback_data=f"font_{random_font.id}")
+                for random_font in random_fonts[i: i + buttons_per_row]
+            ]
+            for i in range(0, len(random_fonts), buttons_per_row)
+        ]
         keyboard.append([InlineKeyboardButton("Thoát", callback_data="exit")])
         inline_keyboard = InlineKeyboardMarkup(keyboard)
 

@@ -97,3 +97,15 @@ class FontService:
         self.db.query(association_table_message_font).delete()
         self.db.query(Font).delete()
         self.db.commit()
+
+    def get_chunk_font(self, chunk_size: int = 50) -> list[list[Type[Font]]]:
+        font_all = self.get_all_fonts()
+        return [font_all[i:i + chunk_size] for i in range(0, len(font_all), chunk_size)]
+
+    def get_chunk_name_font(self, chunk_size: int = 50) -> list[str]:
+        # mỗi phần tử trong list là 1 list chứa tên font của 1 chunk cách nhau bằng \n
+        chunk_string = []
+        chunk_font = self.get_chunk_font(chunk_size)
+        for chunk in chunk_font:
+            chunk_string.append("\n".join(["- " + font.name for font in chunk]))
+        return chunk_string

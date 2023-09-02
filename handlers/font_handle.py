@@ -25,8 +25,21 @@ async def send_image_font(update: Update, context: ContextTypes.DEFAULT_TYPE, fo
 async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     user = update.message.from_user
     logger.info("User %s canceled the conversation.", user.first_name)
+    keyboard = [
+        [
+            InlineKeyboardButton("Option 1", callback_data="1"),
+            InlineKeyboardButton("Option 2", callback_data="2"),
+            InlineKeyboardButton("Option 2", callback_data="2"),
+            InlineKeyboardButton("Option 2", callback_data="2"),
+        ],
+        [InlineKeyboardButton("Option 3", callback_data="3")],
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text("Please choose:", reply_markup=reply_markup)
     await update.message.reply_text(
-        "Bye! I hope we can talk again some day.", reply_markup=ReplyKeyboardRemove()
+        f"Tạm biệt! {user.first_name}.\n"
     )
     return ConversationHandler.END
 
@@ -68,6 +81,7 @@ class FontHandler:
         self.setting_service = setting_service
         self.font_service = font_service
         self.key_list = self.key_service.get_all_keys()
+        self.chunk_name_string = self.font_service.get_chunk_name_font()
 
     async def get_font_by_message(self, message: str):
         result = []
@@ -78,8 +92,15 @@ class FontHandler:
 
         return result
 
+    async def send_list_font(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        for chunk in self.chunk_name_string:
+            await update.message.reply_text(chunk)
+        await update.message.reply_text("Vui lòng gửi tên font bạn muốn tìm kiếm. Hoặc gửi /cancel để hủy.")
+        return self.FONT_NAME
+
     async def font(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-        await update.message.reply_text("Vui lòng gửi tên font bạn muốn tìm kiếm.")
+        await update.message.reply_text(
+            "Vui lòng gửi tên font bạn muốn tìm kiếm.\nLấy danh sách font bằng cách gửi /list.\nHoặc gửi /cancel để hủy.")
         return self.FONT_NAME
 
     async def font_photo(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int | None | Any:
@@ -108,7 +129,8 @@ class FontHandler:
         conv_handler_font = ConversationHandler(
             entry_points=[CommandHandler("fontvh", self.font)],
             states={
-                self.FONT_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.font_photo)],
+                self.FONT_NAME: [CommandHandler("list", self.send_list_font),
+                                 MessageHandler(filters.TEXT & ~filters.COMMAND, self.font_photo)],
                 self.FONT_PHOTO: [MessageHandler(filters.PHOTO, self.download_button)],
                 self.FONT_DOWNLOAD: [CallbackQueryHandler(download_font, pattern="^download$")],
             },
