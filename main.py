@@ -78,17 +78,15 @@ def main() -> None:
     application_1.add_handler(random_handle.get_random_font_handler())
     application_2 = Application.builder().token(telegram_bot_token_2).build()
     application_2.add_handler(start_handler.get_conv_handler_start())
-    schedule_send_font = ScheduleSendFont(application_2, font_global_service, -1001829709246)
-
+    schedule_send_font = ScheduleSendFont(font_global_service, -1001829709246)
+    application_2.add_handler(schedule_send_font.get_schedule_send_font_handler())
+    application_2.add_handler(schedule_send_font.get_main_con())
     thread1 = threading.Thread(target=run_bot, args=(application_1,))
     thread2 = threading.Thread(target=run_bot, args=(application_2,))
-    thread3 = threading.Thread(target=run_schedule_send_font, args=(schedule_send_font,))
     thread1.start()
     thread2.start()
-    thread3.start()
     thread1.join()
     thread2.join()
-    thread3.join()
 
 
 def run_bot(application):
