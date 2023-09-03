@@ -1,19 +1,13 @@
 import asyncio
-import datetime
 from datetime import time as dt_time
 
 import pytz
-import schedule
-import time
-
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.error import RetryAfter
+from telegram.ext import ContextTypes, CommandHandler, ConversationHandler, CallbackContext
 
 from configs.config import TELEGRAM_BOT_USERNAME
 from services.font_global_service import FontGlobalService
-
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, ReplyKeyboardRemove, InputMediaPhoto
-from telegram.ext import ContextTypes, CommandHandler, MessageHandler, filters, \
-    ConversationHandler, CallbackQueryHandler, Application, CallbackContext
 
 
 def job():
