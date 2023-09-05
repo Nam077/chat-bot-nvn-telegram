@@ -134,7 +134,7 @@ class YoutubeMusicConverter:
                 if response.json().get("statusCode") == 300:
                     print("Converting...")
                     self.delay(5000)  # Wait for 5 seconds
-                    self.get_download_url_2_next(option_download_data, chose, server)
+                    return self.get_download_url_2_next(option_download_data, chose, server)
                 else:
                     # self.download(response.json().get("result"), option_download_data.get("title"), chose.get("q"),
                     #               chose.get("f"))
