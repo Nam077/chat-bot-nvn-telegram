@@ -1,11 +1,12 @@
 import asyncio
 import threading
+from warnings import filterwarnings
 
 from sqlalchemy.orm import Session
 from telegram import Update
 from telegram.ext import (
-    Application, CommandHandler,
-)
+    Application, )
+from telegram.warnings import PTBUserWarning
 
 from configs.logging import logger
 from handlers.font_handler import FontHandler
@@ -14,6 +15,7 @@ from handlers.handler_start import HandleStart
 from handlers.random_handler import RandomFontHandler
 from handlers.schedule_send_font import ScheduleSendFont
 from handlers.tiktok_handler import get_conv_handler_tiktok
+from handlers.youtube_downloader_handler import YoutubeDownloadHandler
 from services.font_crawler_service import FontCrawlerService
 from services.font_global_service import FontGlobalService
 from services.font_service import FontService
@@ -25,8 +27,6 @@ from services.message_service import MessageService
 from services.setting_service import SettingService
 from services.tag_service import TagService
 from utils.db import SessionLocal, SessionLocal_2
-from warnings import filterwarnings
-from telegram.warnings import PTBUserWarning
 
 filterwarnings(action="ignore", message=r".*CallbackQueryHandler", category=PTBUserWarning)
 
@@ -69,6 +69,7 @@ def main() -> None:
     font_handle = FontHandler(key_service, setting_service, font_service)
     font_shop_handle = FontShopHandle(font_crawler_service)
     start_handler = HandleStart()
+    youtube_download = YoutubeDownloadHandler()
     telegram_bot_token = setting_service.get_setting_by_key('TELEGRAM_BOT_TOKEN').value
     telegram_bot_token_2 = setting_service.get_setting_by_key('TELEGRAM_BOT_TOKEN_2').value
     application_1 = Application.builder().token(telegram_bot_token).build()
@@ -76,6 +77,9 @@ def main() -> None:
     application_1.add_handler(get_conv_handler_tiktok())
     application_1.add_handler(font_shop_handle.get_conv_handler_font_shop())
     application_1.add_handler(random_handle.get_random_font_handler())
+    application_1.add_handler(youtube_download.get_download_mp3_conv_handler())
+    application_1.add_handler(start_handler.get_conv_handler_start())
+    application_1.add_handler(youtube_download.get_download_mp4_conv_handler())
     application_2 = Application.builder().token(telegram_bot_token_2).build()
     application_2.add_handler(start_handler.get_conv_handler_start())
     schedule_send_font = ScheduleSendFont(font_global_service, -1001829709246)

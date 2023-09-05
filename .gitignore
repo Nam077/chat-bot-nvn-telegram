@@ -6,4 +6,5 @@ build
 venv
 build/main
 __pycache__/
-/database/fonts.db
+/database/
+# xoá cache git git rm -r --cached .idea
