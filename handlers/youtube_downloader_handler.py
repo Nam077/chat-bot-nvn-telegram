@@ -74,7 +74,7 @@ class YoutubeDownloadHandler:
             keyboard = [
                 [
                     InlineKeyboardButton(link.get('q') + " " + link.get('size'),
-                                         callback_data=f"yt_mp3_{link.get('f')}_{link.get('k')}")
+                                         callback_data=f"yt_mp4_{link.get('f')}_{link.get('k')}")
                     for link in links[i: i + buttons_per_row]
                 ]
                 for i in range(0, len(links), buttons_per_row)
@@ -122,7 +122,6 @@ class YoutubeDownloadHandler:
             'f': update.callback_query.data.split('_')[2],
             'k': update.callback_query.data.split('_')[3]
         }
-        print(chose)
         link = self.youtube_dl.get_download_url(option_download_data=option_download, chose=chose)
         print(link)
         await update.callback_query.message.reply_chat_action('upload_audio')
