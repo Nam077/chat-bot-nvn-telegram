@@ -1,7 +1,7 @@
 import asyncio
 import re
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, InputMediaAudio
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, InputMediaAudio, InputMediaVideo
 from telegram.ext import ConversationHandler, CommandHandler, MessageHandler, filters, ContextTypes, \
     CallbackQueryHandler
 
@@ -112,6 +112,30 @@ class YoutubeDownloadHandler:
         asyncio.create_task(update.callback_query.message.reply_media_group(media_group_message))
         return ConversationHandler.END
 
+    async def youtube_covert_mp4(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+        if update.callback_query.data == "exit":
+            await update.callback_query.message.reply_text("Tạm biệt!")
+            return ConversationHandler.END
+        downloading = await update.callback_query.message.reply_text("Đang tải video, vui lòng chờ...")
+        option_download = context.user_data.get('option_download')
+        chose = {
+            'f': update.callback_query.data.split('_')[2],
+            'k': update.callback_query.data.split('_')[3]
+        }
+        print(chose)
+        link = self.youtube_dl.get_download_url(option_download_data=option_download, chose=chose)
+        print(link)
+        await update.callback_query.message.reply_chat_action('upload_audio')
+        media_group_message = []
+        link_user = context.user_data.get('link')
+        media_group_message.append(
+            InputMediaVideo(link.get('url'), filename=link.get('filename'),
+                            caption=f'<a href="{link_user}">Youtube Link</a>\n' + \
+                                    f'<b>Downloaded by {TELEGRAM_BOT_USERNAME}</b>',
+                            parse_mode='HTML'))
+        asyncio.create_task(update.callback_query.message.reply_media_group(media_group_message))
+        return ConversationHandler.END
+
     async def cancel(self, update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
         user = update.message.from_user
         await update.message.reply_text("Tạm biệt!")
@@ -132,7 +156,7 @@ class YoutubeDownloadHandler:
             entry_points=[CommandHandler('yt_mp4', self.youtube_download_start)],
             states={
                 YOUTUBE_LINK: [MessageHandler(filters.TEXT & ~filters.COMMAND, self.youtube_download_mp4)],
-                YOUTUBE_DOWNLOAD: [CallbackQueryHandler(self.youtube_covert, pattern="^yt_mp4_"), ]
+                YOUTUBE_DOWNLOAD: [CallbackQueryHandler(self.youtube_covert_mp4, pattern="^yt_mp4_"), ]
             },
             fallbacks=[CommandHandler('cancel', self.cancel)],
         )
